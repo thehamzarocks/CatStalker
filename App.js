@@ -40,8 +40,18 @@ const App: () => React$Node = () => {
   const [signedIn, setSignedIn] = React.useState(false);
   const [openApp, setOpenApp] = React.useState('journal');
 
+  const unsubscribe = firebase.auth().onAuthStateChanged((user) => {
+    if(user) {
+      setSignedIn(true)
+    } else {
+      setSignedIn(false)
+    }
+  })
 
-  async function bootstraps() {
+  unsubscribe()
+
+
+  async function bootstrap() {
     await GoogleSignin.configure({
       webClientId: '46548177659-09g1m8u0u3p03nia40b2ma29naa9qh5h.apps.googleusercontent.com', // required
     });
@@ -55,17 +65,24 @@ const App: () => React$Node = () => {
     // await firebase.auth.signOut()
   }
 
+  async function signOut() {
+    // Alert.alert(firebase.auth().currentUser)
+    await firebase.auth().signOut()
+    setSignedIn(false)
+  }
+
     if(!signedIn) {
       return (
         <SafeAreaView>
           <Text>Login</Text>
-          <Button title="start google auth" onPress={bootstraps}/>
+          <Button title="start google auth" onPress={bootstrap}/>
         </SafeAreaView>
       );
     } else {
       return (
         <>
           <SafeAreaView style={styles.container}>
+            <Button title="sign out" onPress={signOut} />
             <Window openApp={openApp} style={styles.window}/>
             <AppBar setOpenApp={setOpenApp} style={styles.appBar}/>
           </SafeAreaView>
@@ -73,9 +90,6 @@ const App: () => React$Node = () => {
       )
     }
   }
-
-
-// };
 
 const styles = StyleSheet.create({
   container: {
