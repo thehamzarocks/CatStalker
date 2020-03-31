@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>46548177659-09g1m8u0u3p03nia40b2ma29naa9qh5h.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.46548177659-09g1m8u0u3p03nia40b2ma29naa9qh5h</string>
+	<key>API_KEY</key>
+	<string>AIzaSyAzaJo6G6Qe06ZECE9mKAoRxtTgiY9OOog</string>
+	<key>GCM_SENDER_ID</key>
+	<string>46548177659</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>org.reactjs.native.example.GithubBrowser</string>
+	<key>PROJECT_ID</key>
+	<string>cat-stalker</string>
+	<key>STORAGE_BUCKET</key>
+	<string>cat-stalker.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:46548177659:ios:6a63820b93c291d9a3565e</string>
+	<key>DATABASE_URL</key>
+	<string>https://cat-stalker.firebaseio.com</string>
+</dict>
+</plist>

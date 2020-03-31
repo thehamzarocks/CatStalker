@@ -1,6 +1,6 @@
 import React from 'react'
 import { View, Text } from 'react-native'
-import FeedsApp from './FeedsApp'
+import FeedsApp from './Feeds/FeedsApp'
 import MapsApp from './MapsApp'
 import ChatsApp from './ChatsApp'
 import JournalApp from './JournalApp'
