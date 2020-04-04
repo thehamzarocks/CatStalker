@@ -39,16 +39,16 @@ import firestore from '@react-native-firebase/firestore';
 
 const App: () => React$Node = () => {
 
-  const [signedIn, setSignedIn] = React.useState(false);
+  const [signedInUser, setSignedInUserUser] = React.useState(null);
   const [openApp, setOpenApp] = React.useState('journal');
   const [currentState, setCurrentState] = React.useState('0001')
+  let stateMachine = {}
 
   const unsubscribe = firebase.auth().onAuthStateChanged((user) => {
     if(user) {
       loadUserState(user)
-      setSignedIn(true)
     } else {
-      setSignedIn(false)
+      setSignedInUserUser(null)
     }
   })
 
@@ -64,16 +64,12 @@ const App: () => React$Node = () => {
 
     const credential = firebase.auth.GoogleAuthProvider.credential(idToken, accessToken);
     const userCredential = await firebase.auth().signInWithCredential(credential);
-    Alert.alert(userCredential.user.email)
     intializeUserState(userCredential.user)
-    Alert.alert("You're signed in!")
-    // await firebase.auth.signOut()
   }
 
   async function signOut() {
-    // Alert.alert(firebase.auth().currentUser)
     await firebase.auth().signOut()
-    setSignedIn(false)
+    setSignedInUserUser(null)
   }
 
   async function intializeUserState(user) {
@@ -87,10 +83,11 @@ const App: () => React$Node = () => {
         name: user.displayName,
         currentState: '0001'
       })
+      await intializeStateMachine('0001')
     } else {
-      setCurrentState(querySnapshot.docs[0].get('currentState'))
+      await intializeStateMachine(querySnapshot.docs[0].get('currentState'))
     }
-    setSignedIn(true);
+    setSignedInUserUser(user);
   }
 
   async function loadUserState(user) {
@@ -100,10 +97,54 @@ const App: () => React$Node = () => {
     if(querySnapshot.empty) {
       return
     }
-    setCurrentState(querySnapshot.docs[0].get('currentState'))
-  } 
+    await intializeStateMachine(querySnapshot.docs[0].get('currentState'))
+    setSignedInUserUser(user)
+  }
 
-    if(!signedIn) {
+  async function intializeStateMachine(currentState) {
+    stateMachine = await firestore().collection('quests').where('name', '==', 'Find Jill').get()
+    stateMachine = stateMachine.docs[0].data()
+    setCurrentState(currentState)
+  }
+
+  async function handleAction(actionObject) {
+    transition = getMatchingTransition(actionObject)
+    if (!transition) {
+      return;
+    }
+    // A transition matches our action, so update our state in the db
+    userObject = await firestore().collection('users').where('email', '==', signedInUser.email).get()
+    await userObject.docs[0].ref.update({currentState: transition.toState})
+    setCurrentState(transition.toState)
+    // TOOO: update the UI
+    Alert.alert("Found matching transition!")
+  }
+
+  function getMatchingTransition(actionObject) {
+    stateObject = stateMachine.states.find(state => state.id == currentState)
+    matchingTransition = stateObject.transitions.find(transition => isMatchingTransition(transition, actionObject))
+    return matchingTransition
+  }
+
+  function isMatchingTransition(transition, actionObject) {
+    if(transition.app == actionObject.app && transition.action == actionObject.action) {
+      // Alert.alert("Hmm need to check params")
+      transitionParamKeys = Object.keys(transition.params)
+      actionParamKeys = Object.keys(actionObject.params)
+      paramsMatch = true
+      // TODO: check other way around also?
+      transitionParamKeys.forEach(key => {
+        if(transition.params[key] != actionObject.params[key]) {
+          paramsMatch = false
+        }
+      })
+      return paramsMatch
+    }
+    return false
+  }
+
+
+    if(!signedInUser) {
       return (
         <SafeAreaView>
           <Text>Login</Text>
@@ -115,7 +156,7 @@ const App: () => React$Node = () => {
         <>
           <SafeAreaView style={styles.container}>
             <Button title="sign out" onPress={signOut} />
-            <Window openApp={openApp} style={styles.window}/>
+            <Window openApp={openApp} handleAction={handleAction} style={styles.window}/>
             <AppBar setOpenApp={setOpenApp} style={styles.appBar}/>
           </SafeAreaView>
         </>

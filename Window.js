@@ -9,10 +9,10 @@ export default function Window(props) {
 
     function renderApp(appName) {
         switch(appName) {
-            case 'feeds': return <FeedsApp appName={appName} />
-            case 'maps': return <MapsApp appName={appName} />
-            case 'chats': return <ChatsApp appName={appName} />
-            case 'journal': return <JournalApp appName={appName} />
+            case 'feeds': return <FeedsApp appName={appName} handleAction={props.handleAction} />
+            case 'maps': return <MapsApp appName={appName} handleAction={props.handleAction} />
+            case 'chats': return <ChatsApp appName={appName} handleAction={props.handleAction} />
+            case 'journal': return <JournalApp appName={appName} handleAction={props.handleAction} />
         }
     }
 

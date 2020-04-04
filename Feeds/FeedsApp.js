@@ -16,10 +16,16 @@ export default class FeedsApp extends React.Component {
     goToFeeds = this.goToFeeds.bind(this)
 
     loadUserFeed(name, entry, entryType) {
-        Alert.alert("User loaded")
         this.setState({
             selectedUser: name,
             peopleOrFeed: 'feed'
+        })
+        this.props.handleAction({
+            app: 'feeds',
+            action: 'openFeedEntry',
+            params: {
+                id: name
+            }
         })
     }
 
@@ -64,9 +70,9 @@ export default class FeedsApp extends React.Component {
       displayPeopleOrFeed(peopleOrFeed) {
           switch(peopleOrFeed) {
               case 'people': return <PeopleFeedList feeds={this.feeds} feedEntries={this.feedEntries} search={this.state.search}
-                loadUserFeed={this.loadUserFeed}/>
+                loadUserFeed={this.loadUserFeed}  />
               case 'feed': return <PersonFeed feedEntries={this.feedEntries} userName={this.state.selectedUser}
-                search={this.state.search} goToFeeds={this.goToFeeds}/>
+                search={this.state.search} goToFeeds={this.goToFeeds} />
           }
       }
 
