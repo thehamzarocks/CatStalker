@@ -3,6 +3,8 @@ import { View, Text, TextInput, StyleSheet, FlatList, TouchableOpacity, Alert } 
 import { SearchBar } from 'react-native-elements';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
 
+// import firestore from '@react-native-firebase/firestore';
+
 const FEED_DATA = {
     feeds: [{
         id: "15",
@@ -17,34 +19,110 @@ const PEOPLE_DATA = {
     people: [{
         id: "578",
         name: "Zogbert",
-        description: "Zogbert the max-cats! Parties are where you'll find me!"
+        description: "Zogbert the max-cat! Parties are where you'll find me!"
     }]
 }
 
-function Item({ entry, description }) {
+function Item({ item, loadUserFeed }) {
     return (
       <TouchableOpacity
       style={feedListStyle.personStyle}
-        onPress={() => {Alert.alert('Hello')}}
+        onPress={() => goToEntry(item, loadUserFeed)}
       >
-        <Text>{entry}</Text>
-        <Text>{description}</Text>
+        <Text>{item.name}</Text>
+        <Text>{item.entry}</Text>
       </TouchableOpacity>
     );
   }
 
-export default class FeedsApp extends React.Component {
+  function goToEntry(item, loadUserFeed) {
+      loadUserFeed(item.userId, item.entry, item.entryType)
+    //   if(item.entryType == 'peopleOrBusiness') {
+    //       Alert.alert("I'm a cat")
+    //   } else {
+    //       Alert.alert("I'm made by a cat")
+    //   }
+  }
 
-    renderThisItem(item) {
-        return <Item entry={item.name} description={item.description} />
+export default class PeopleFeedList extends React.Component {
+
+    state = {
+        entriesFetched: false
+    }
+
+    feedList = []
+
+    loadFeedData() {
+        // // data already loaded
+        // if(this.state.entriesFetched) {
+        //     return;
+        // }
+
+        // parent component hasn't passed in loaded data
+        if(this.props.feeds.size == 0) {
+            return;
+        }
+
+        this.feedList = []
+
+        this.props.feeds.forEach(feed => {
+            this.feedList.push({
+                userId: feed.id,
+                entryType: 'peopleOrBusiness',
+                name: feed.name,
+                entry: feed.description
+            })
+        })
+
+        this.props.feedEntries.forEach(feedEntry => {
+            feedUser = this.getUser(feedEntry.user)
+            this.feedList.push({
+                userId: feedUser.id,
+                entryType: 'feedEntry',
+                name: feedUser.name,
+                entry: feedEntry.entry
+            })
+        })
+
+    }
+
+    getUser(userId) {
+        // TODO: there must always be a matching feed
+        matchingFeed = this.props.feeds.find(feed => feed.id == userId)
+        return matchingFeed ? {id:matchingFeed.id, name:matchingFeed.name} : {}
+    }
+
+    // peopleData = {}
+
+    // async loadPeopleData() {
+    //     const people = await firestore()
+    //         .collection('people')
+    //         .get();
+        
+    //     this.peopleData.people = people.docs.map(people => people.data())
+    //     this.setState({entriesFetched: true});
+    // }
+
+    // componentDidMount() {
+    //     this.loadPeopleData()
+    // }
+
+    renderThisItem(item, search, loadUserFeed) {
+        if(item.name.toLowerCase().includes(search.toLowerCase()) || item.entry.toLowerCase().includes(search.toLowerCase())) {
+            return <Item item={item} loadUserFeed={loadUserFeed}/>
+        } else {
+            return null
+        }
     }
     render() {
+        this.loadFeedData()
         return (
             <View>
                 <View>
+                    <Text>Entries fetched: {this.state.entriesFetched.toString()}</Text>
                     <FlatList
-                        data = {PEOPLE_DATA.people}
-                        renderItem={({ item }) => this.renderThisItem(item)}
+                        data = {this.feedList}
+                        renderItem={({ item }) => this.renderThisItem(item, this.props.search, this.props.loadUserFeed)}
                         keyExtractor={(item, index) => index.toString()}
                         />
                 </View>

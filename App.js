@@ -34,14 +34,18 @@ import auth from '@react-native-firebase/auth';
 import { firebase } from '@react-native-firebase/auth';
 import { GoogleSignin } from '@react-native-community/google-signin';
 
+// import { firestore } from 'firebase';
+import firestore from '@react-native-firebase/firestore';
 
 const App: () => React$Node = () => {
 
   const [signedIn, setSignedIn] = React.useState(false);
   const [openApp, setOpenApp] = React.useState('journal');
+  const [currentState, setCurrentState] = React.useState('0001')
 
   const unsubscribe = firebase.auth().onAuthStateChanged((user) => {
     if(user) {
+      loadUserState(user)
       setSignedIn(true)
     } else {
       setSignedIn(false)
@@ -59,8 +63,9 @@ const App: () => React$Node = () => {
     const { accessToken, idToken } = await GoogleSignin.signIn();
 
     const credential = firebase.auth.GoogleAuthProvider.credential(idToken, accessToken);
-    await firebase.auth().signInWithCredential(credential);
-    setSignedIn(true);
+    const userCredential = await firebase.auth().signInWithCredential(credential);
+    Alert.alert(userCredential.user.email)
+    intializeUserState(userCredential.user)
     Alert.alert("You're signed in!")
     // await firebase.auth.signOut()
   }
@@ -70,6 +75,33 @@ const App: () => React$Node = () => {
     await firebase.auth().signOut()
     setSignedIn(false)
   }
+
+  async function intializeUserState(user) {
+    Alert.alert("Initializing")
+    const querySnapshot = await firestore().collection('users').where('email','==', user.email).get()
+
+    // If new user, set his initial state in the db
+    if(querySnapshot.empty) {
+      await firestore().collection('users').add(data = {
+        email: user.email,
+        name: user.displayName,
+        currentState: '0001'
+      })
+    } else {
+      setCurrentState(querySnapshot.docs[0].get('currentState'))
+    }
+    setSignedIn(true);
+  }
+
+  async function loadUserState(user) {
+    const querySnapshot = await firestore().collection('users').where('email','==', user.email).get()
+    // weird, this is happening on sign in also for some reason, so querySnapshot here is empty since
+    // the user hasn't been created yet. It will be created in the sign on process
+    if(querySnapshot.empty) {
+      return
+    }
+    setCurrentState(querySnapshot.docs[0].get('currentState'))
+  } 
 
     if(!signedIn) {
       return (

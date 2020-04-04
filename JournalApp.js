@@ -3,6 +3,8 @@ import { View, Text, TextInput, Alert, StyleSheet, FlatList, TouchableOpacity } 
 import { SearchBar } from 'react-native-elements';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
 
+import firestore from '@react-native-firebase/firestore';
+
 const DATA = {
     userJournalId: "15",
     userId: "12",
@@ -51,8 +53,33 @@ function Item({ entry }) {
 
 export default class JournalApp extends React.Component {
 
+    journalEntries = {
+        userJournalId: "15",
+        userId: "12",
+        userJournalEntries: []
+    }
+
     state = {
         search: '',
+        entriesFetched: false
+    }
+
+    async loadJournalEntries() {
+        const feeds = await firestore()
+            .collection('journalEntries')
+            .get();
+        
+        this.journalEntries.userJournalEntries = feeds.docs.map(doc => doc.data())
+        this.setState({entriesFetched: true});
+        
+        
+        // Alert.alert(feeds)
+        
+        
+    }
+
+    componentDidMount() {
+        this.loadJournalEntries()
     }
 
     updateSearch = search => {
@@ -60,6 +87,7 @@ export default class JournalApp extends React.Component {
       };
 
     renderThisItem(item, search) {
+        // return <Item entry={JSON.stringify(item)} />
         if(item.entry.toLowerCase().includes(search.toLowerCase())) {
             return <Item entry={item.entry} />
         }
@@ -78,7 +106,7 @@ export default class JournalApp extends React.Component {
                 </View>
                 <View style={journalStyles.journalPage}>
                     <FlatList
-                    data = {DATA.userJournalEntries}
+                    data = {this.journalEntries.userJournalEntries}
                     renderItem={({ item }) => this.renderThisItem(item, search)}
                     keyExtractor={(item, index) => index.toString()}
                     />

@@ -1,13 +1,60 @@
 import React from 'react'
-import { View, Text, TextInput } from 'react-native'
+import { View, Text, TextInput, Alert } from 'react-native'
 import { SearchBar } from 'react-native-elements';
 import PeopleFeedList from './PeopleFeedList';
 import PersonFeed from './PersonFeed';
 
+import firestore from '@react-native-firebase/firestore';
+
+
 export default class FeedsApp extends React.Component {
+
+    feeds = []
+    feedEntries = []
+
+    loadUserFeed = this.loadUserFeed.bind(this)
+    goToFeeds = this.goToFeeds.bind(this)
+
+    loadUserFeed(name, entry, entryType) {
+        Alert.alert("User loaded")
+        this.setState({
+            selectedUser: name,
+            peopleOrFeed: 'feed'
+        })
+    }
+
+    goToFeeds() {
+        this.setState({
+            peopleOrFeed: 'people',
+            selectedUser: null
+        })
+    }
+
+    async loadFeedData() {
+        const feeds = await firestore()
+            .collection('people')
+            .get();
+        
+        this.feeds = feeds.docs.map(feed => { return {...feed.data(), id: feed.id} })
+
+        const feedEntries = await firestore()
+            .collection('feeds')
+            .get();
+        
+        this.feedEntries = feedEntries.docs.map(feedEntry => { return {...feedEntry.data(), id: feedEntry.id} })
+
+        this.setState({entriesFetched: true})
+    }
+
+    componentDidMount() {
+        this.loadFeedData()
+    }
+
     state = {
         search: '',
-        peopleOrFeed: 'people'
+        peopleOrFeed: 'people',
+        entriesFetched: false,
+        selectedUser: null
     }
 
     updateSearch = search => {
@@ -16,8 +63,10 @@ export default class FeedsApp extends React.Component {
 
       displayPeopleOrFeed(peopleOrFeed) {
           switch(peopleOrFeed) {
-              case 'people': return <PeopleFeedList/>
-              case 'feed': return <PersonFeed />
+              case 'people': return <PeopleFeedList feeds={this.feeds} feedEntries={this.feedEntries} search={this.state.search}
+                loadUserFeed={this.loadUserFeed}/>
+              case 'feed': return <PersonFeed feedEntries={this.feedEntries} userName={this.state.selectedUser}
+                search={this.state.search} goToFeeds={this.goToFeeds}/>
           }
       }
 
@@ -31,6 +80,7 @@ export default class FeedsApp extends React.Component {
                     onChangeText={this.updateSearch}
                     value={search}
                 />
+                <Text>App: {this.state.entriesFetched.toString()}</Text>
                 </View>
                 <View>
                     {this.displayPeopleOrFeed(this.state.peopleOrFeed)}
