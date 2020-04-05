@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, Text, TextInput, Button, FlatList, TouchableOpacity, StyleSheet } from 'react-native'
+import { View, Text, TextInput, Button, FlatList, TouchableOpacity, StyleSheet, Alert } from 'react-native'
 import { SearchBar } from 'react-native-elements';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
 
@@ -14,7 +14,7 @@ function Item({ item }) {
     );
   }
 
-export default class FeedsApp extends React.Component {
+export default class PersonFeed extends React.Component {
 
     feedEntries = []
 
@@ -31,17 +31,20 @@ export default class FeedsApp extends React.Component {
 
         this.feedEntries = []
 
-        this.props.feedEntries.forEach(feedEntry => {
+        selectedUser = this.props.selectedUser
+        feedEntriesForSelectedUser = this.props.feedEntries.filter(feedEntry => feedEntry.user == selectedUser)
+        feedEntriesForSelectedUser.forEach(feedEntry => {
             this.feedEntries.push({
                 entryType: 'feedEntry',
-                entry: feedEntry.entry
+                entry: feedEntry.entry,
+                userName: feedEntry.userName
             })
         })
-
     }
 
     renderThisItem(item, search) {
-        if(item.entry.toLowerCase().includes(search.toLowerCase())) {
+        if(item.userName.toLowerCase().includes(search.toLowerCase()) ||
+             item.entry.toLowerCase().includes(search.toLowerCase())) {
             return <Item item={item}/>
         } else {
             return null
@@ -52,11 +55,11 @@ export default class FeedsApp extends React.Component {
         this.loadFeedEntries()
         return (
             <View>
-                <Text>{this.props.userName}'s Feed</Text>
+                <Text>{this.props.selectedUser}'s Feed</Text>
                 <Button title="Back" onPress={this.props.goToFeeds} />
                 <FlatList
                         data = {this.feedEntries}
-                        renderItem={({ item }) => this.renderThisItem(item, this.props.search, this.props.loadUserFeed)}
+                        renderItem={({ item }) => this.renderThisItem(item, this.props.search)}
                         keyExtractor={(item, index) => index.toString()}
                 />
             </View>

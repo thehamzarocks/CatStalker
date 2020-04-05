@@ -65,11 +65,17 @@ export default class JournalApp extends React.Component {
     }
 
     async loadJournalEntries() {
+
         const feeds = await firestore()
             .collection('journalEntries')
             .get();
         
-        this.journalEntries.userJournalEntries = feeds.docs.map(doc => doc.data())
+        journalEntries = this.props.journalEntries
+        this.journalEntries.userJournalEntries = feeds.docs.filter(doc => journalEntries.includes(doc.id))
+        this.journalEntries.userJournalEntries = this.journalEntries.userJournalEntries.map(entry => 
+            { 
+                return {...entry.data(), id:entry.id}
+            })
         this.setState({entriesFetched: true});
         
         

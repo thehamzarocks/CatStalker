@@ -16,6 +16,7 @@ import {
   StatusBar,
   Button,
   Alert,
+  ActivityIndicatorComponent,
 } from 'react-native';
 
 import {
@@ -42,6 +43,7 @@ const App: () => React$Node = () => {
   const [signedInUser, setSignedInUserUser] = React.useState(null);
   const [openApp, setOpenApp] = React.useState('journal');
   const [currentState, setCurrentState] = React.useState('0001')
+  const [journalEntries, setJournalEntries] = React.useState(['0001'])
   let stateMachine = {}
 
   const unsubscribe = firebase.auth().onAuthStateChanged((user) => {
@@ -81,7 +83,9 @@ const App: () => React$Node = () => {
       await firestore().collection('users').add(data = {
         email: user.email,
         name: user.displayName,
-        currentState: '0001'
+        currentState: '0001',
+        journalEntries: ['0001'],
+        friends: ['0001']
       })
       await intializeStateMachine('0001')
     } else {
@@ -117,7 +121,17 @@ const App: () => React$Node = () => {
     await userObject.docs[0].ref.update({currentState: transition.toState})
     setCurrentState(transition.toState)
     // TOOO: update the UI
-    Alert.alert("Found matching transition!")
+    actionsToPerform = transition.actions || []
+    for (const actionToPerform of actionsToPerform) {
+      if(actionToPerform.name == 'addJournalEntry') {
+        userObject = await firestore().collection('users').where('email', '==', signedInUser.email).get()
+        existingJournaEntries = userObject.docs[0].data().journalEntries || []
+        existingJournaEntries.push(actionToPerform.entry)
+        await userObject.docs[0].ref.update({journalEntries: existingJournaEntries})
+        setJournalEntries(existingJournaEntries)
+        Alert.alert("Journal Updated!")
+      }
+    }
   }
 
   function getMatchingTransition(actionObject) {
@@ -156,7 +170,7 @@ const App: () => React$Node = () => {
         <>
           <SafeAreaView style={styles.container}>
             <Button title="sign out" onPress={signOut} />
-            <Window openApp={openApp} handleAction={handleAction} style={styles.window}/>
+            <Window openApp={openApp} handleAction={handleAction} journalEntries={journalEntries} style={styles.window}/>
             <AppBar setOpenApp={setOpenApp} style={styles.appBar}/>
           </SafeAreaView>
         </>

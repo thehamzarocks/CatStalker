@@ -15,16 +15,16 @@ export default class FeedsApp extends React.Component {
     loadUserFeed = this.loadUserFeed.bind(this)
     goToFeeds = this.goToFeeds.bind(this)
 
-    loadUserFeed(name, entry, entryType) {
+    loadUserFeed(userId, entry, entryType) {
         this.setState({
-            selectedUser: name,
+            selectedUser: userId,
             peopleOrFeed: 'feed'
         })
         this.props.handleAction({
             app: 'feeds',
             action: 'openFeedEntry',
             params: {
-                id: name
+                id: userId
             }
         })
     }
@@ -47,9 +47,17 @@ export default class FeedsApp extends React.Component {
             .collection('feeds')
             .get();
         
-        this.feedEntries = feedEntries.docs.map(feedEntry => { return {...feedEntry.data(), id: feedEntry.id} })
+        this.feedEntries = feedEntries.docs.map(feedEntry => { 
+            return {...feedEntry.data(), id: feedEntry.id, userName: this.getUserName(feedEntry.data().user)} 
+        })
 
         this.setState({entriesFetched: true})
+    }
+
+    // Assume people data is already fetched into feeds
+    getUserName(userId) {
+        matchingPerson = this.feeds.find(feed => feed.id == userId)
+        return matchingPerson.name
     }
 
     componentDidMount() {
@@ -71,7 +79,7 @@ export default class FeedsApp extends React.Component {
           switch(peopleOrFeed) {
               case 'people': return <PeopleFeedList feeds={this.feeds} feedEntries={this.feedEntries} search={this.state.search}
                 loadUserFeed={this.loadUserFeed}  />
-              case 'feed': return <PersonFeed feedEntries={this.feedEntries} userName={this.state.selectedUser}
+              case 'feed': return <PersonFeed feedEntries={this.feedEntries} selectedUser={this.state.selectedUser}
                 search={this.state.search} goToFeeds={this.goToFeeds} />
           }
       }

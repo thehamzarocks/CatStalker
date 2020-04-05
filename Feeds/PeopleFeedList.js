@@ -75,21 +75,14 @@ export default class PeopleFeedList extends React.Component {
         })
 
         this.props.feedEntries.forEach(feedEntry => {
-            feedUser = this.getUser(feedEntry.user)
             this.feedList.push({
-                userId: feedUser.id,
+                userId: feedEntry.user,
                 entryType: 'feedEntry',
-                name: feedUser.name,
+                name: feedEntry.userName,
                 entry: feedEntry.entry
             })
         })
 
-    }
-
-    getUser(userId) {
-        // TODO: there must always be a matching feed
-        matchingFeed = this.props.feeds.find(feed => feed.id == userId)
-        return matchingFeed ? {id:matchingFeed.id, name:matchingFeed.name} : {}
     }
 
     // peopleData = {}
