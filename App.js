@@ -44,6 +44,10 @@ const App: () => React$Node = () => {
   const [openApp, setOpenApp] = React.useState('journal');
   const [currentState, setCurrentState] = React.useState('0001')
   const [journalEntries, setJournalEntries] = React.useState(['0001'])
+  const [sentChats, setSentChats] = React.useState([])
+  const [availablePrompts, setAvailablePrompts] = React.useState([])
+
+
   let stateMachine = {}
 
   const unsubscribe = firebase.auth().onAuthStateChanged((user) => {
@@ -85,7 +89,9 @@ const App: () => React$Node = () => {
         name: user.displayName,
         currentState: '0001',
         journalEntries: ['0001'],
-        friends: ['0001']
+        friends: ['0001'],
+        sentChats: [],
+        availablePrompts: []
       })
       await intializeStateMachine('0001')
     } else {
