@@ -2,21 +2,49 @@ import React from 'react'
 import { View, Text, TextInput, Button, FlatList, TouchableOpacity, StyleSheet, Alert } from 'react-native'
 import { SearchBar } from 'react-native-elements';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
+import chats from '../Collections/Chats';
 
 function Item({ item }) {
     return (
       <TouchableOpacity
       style={feedListStyle.personStyle}
-        onPress={() => {}}
-      >
+        onPress={() => {}}>
         <Text>{item.entry}</Text>
       </TouchableOpacity>
     );
   }
 
+  function PromptItem({item, userState}) {
+      return (
+          <TouchableOpacity
+            style={feedListStyle.personStyle}
+            onPress={() => sendMessageAndHandleAction(item, userState)}>
+                <Text>{item.prompt}</Text>
+            </TouchableOpacity>
+      )
+  }
+
+  async function sendMessageAndHandleAction(item, userState) {
+      // remove prompts for this chat from state
+      existingAvailablePrompts = userState.availablePrompts
+      promptIdsForChat = this.prompts.map(prompt => prompt.id)
+      existingAvailablePrompts.filter(prompt => {
+          return !promptIdsForChat.includes(prompt.id)
+      })
+      const userObject = await firestore().collection('users').where('email', '==', userState.user.email).get()
+      await userObject.docs[0].ref.update({availablePrompts: existingAvailablePrompts})
+      
+      this.prompts = []
+      // set the message to sent
+      existingSentChats = userState.sentChats
+      existingSentChats.push(item.id)
+      await userObject.docs[0].ref.update({sentChats: existingSentChats})
+  }
+
 export default class PersonChat extends React.Component {
 
-    feedEntries = []
+    chatEntries = []
+    prompts = []
 
     loadChatEntries() {
         // // data already loaded
@@ -43,9 +71,17 @@ export default class PersonChat extends React.Component {
                 toUserName: chatEntry.toUserName
             })
         })
+
+        selectedUser = this.props.selectedUser
+        availablePrompts = this.props.userState.availablePrompts || []
+        this.prompts = chats.filter(chat => {
+             return (chat.fromUserId == "0000" &&
+                chat.toUserId == selectedUser &&
+                availablePrompts.includes(chat.id))
+        })
     }
 
-    renderThisItem(item, search) {
+    renderChat(item, search) {
         if(item.fromUserId != '0000') {
             if(item.fromUserName.toLowerCase().includes(search.toLowerCase()) || item.entry.toLowerCase().includes(search.toLowerCase())) {
                 return <Item item={item} />
@@ -58,6 +94,10 @@ export default class PersonChat extends React.Component {
         return null
     }
 
+    renderPrompt(item, userState) {
+        return <PromptItem item={item} userState={userState}/>
+    }
+
     render() {
         this.loadChatEntries()
         return (
@@ -66,7 +106,12 @@ export default class PersonChat extends React.Component {
                 <Button title="Back" onPress={this.props.goToChats} />
                 <FlatList
                         data = {this.chatEntries}
-                        renderItem={({ item }) => this.renderThisItem(item, this.props.search)}
+                        renderItem={({ item }) => this.renderChat(item, this.props.search)}
+                        keyExtractor={(item, index) => index.toString()}
+                />
+                <FlatList
+                        data = {this.prompts}
+                        renderItem={({ item }) => this.renderPrompt(item, this.props.userState)}
                         keyExtractor={(item, index) => index.toString()}
                 />
             </View>

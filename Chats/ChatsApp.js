@@ -52,6 +52,10 @@ export default class ChatsApp extends React.Component {
             return {...chatEntry, toUserName: this.getUserName(chatEntry.toUserId),
                 fromUserName: this.getUserName(chatEntry.fromUserId)}
         })
+        sentChats = this.props.userState.sentChats || []
+        this.chatEntries = this.chatEntries.filter(chatEntry => {
+            return sentChats.includes(chatEntry.id)
+        })
 
         this.setState({entriesFetched: true})
     }
@@ -83,9 +87,9 @@ export default class ChatsApp extends React.Component {
       displayListOrChats(listOrChat) {
           switch(listOrChat) {
               case 'list': return <ChatList chats={this.chats} chatEntries={this.chatEntries} search={this.state.search}
-              loadUserChat={this.loadUserChat}  />
+              loadUserChat={this.loadUserChat} userState={this.props.userState}  />
               case 'chat': return <PersonChat chatEntries={this.chatEntries} selectedUser={this.state.selectedUser}
-                search={this.state.search} goToChats={this.goToChats} />
+                search={this.state.search} goToChats={this.goToChats} userState={this.props.userState}/>
           }
       }
 

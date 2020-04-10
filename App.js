@@ -109,7 +109,8 @@ const App: () => React$Node = () => {
       journalEntries: userObject.journalEntries,
       friends: userObject.friends,
       sentChats: userObject.sentChats,
-      availablePrompts: userObject.availablePrompts
+      availablePrompts: userObject.availablePrompts,
+      signedInUser: user
     })
     if(!signedInUser) {
       setSignedInUser(user)
@@ -129,7 +130,7 @@ const App: () => React$Node = () => {
       return;
     }
     // A transition matches our action, so update our state in the db
-    userObject = await firestore().collection('users').where('email', '==', signedInUser.email).get()
+    const userObject = await firestore().collection('users').where('email', '==', signedInUser.email).get()
     await userObject.docs[0].ref.update({stateMachineState: transition.toState})
     setUserState({...userState, stateMachineState: transition.toState})
     // TOOO: update the UI
@@ -137,12 +138,20 @@ const App: () => React$Node = () => {
     for (const actionToExecute of actionsToExecute) {
       switch(actionToExecute.actionName) {
         case 'addJournalEntry': {
-          userObject = await firestore().collection('users').where('email', '==', signedInUser.email).get()
-          existingJournaEntries = userObject.docs[0].data().journalEntries || []
+          existingJournaEntries = userState.journalEntries
           existingJournaEntries.push(actionToExecute.entryId)
           await userObject.docs[0].ref.update({journalEntries: existingJournaEntries})
           setUserState({...userState, journalEntries: existingJournaEntries})
           Alert.alert("Journal Updated!")
+          break;
+        }
+        case 'addAvailablePrompts': {
+          Alert.alert(JSON.stringify(userState))
+          existingAvailablePrompts = userState.availablePrompts
+          existingAvailablePrompts = existingAvailablePrompts.concat(actionToExecute.promptsToAdd)
+          await userObject.docs[0].ref.update({availablePrompts: existingAvailablePrompts})
+          setUserState({...userState, availablePrompts: existingAvailablePrompts})
+          break;
         }
       }
     }

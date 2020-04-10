@@ -12,14 +12,18 @@ const quests = [
                         transitionMatchers: {
                             app: "feeds",
                             action: "openFeedEntry",
-                            userId: '0002'
+                            userId: '0001'
                         },
                         toState: "0002",
                         actionsToExecute: [
                             {
+                                actionName: "addAvailablePrompts",
+                                promptsToAdd: ['0001', '0002']
+                            },
+                            {
                                 actionName: "addJournalEntry",
                                 entryId: "0002"
-                            }
+                            },
                         ]
                     }
                 ]
