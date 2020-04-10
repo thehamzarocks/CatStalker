@@ -34,7 +34,15 @@ function Item({ item, loadUserChat }) {
   }
 
   function goToEntry(item, loadUserChat) {
-    loadUserChat(item.userId, item.entry, item.entryType)
+      if(item.entryType == 'peopleOrBusiness') {
+        loadUserChat(item.userId, item.entry, item.entryType)
+      } else if (item.entryType == 'chatEntry') {
+        if(item.toUserId != '0000') {
+            loadUserChat(item.toUserId, item.entry, item.entryType)
+        } else if (item.fromUserId != '0000') {
+            loadUserChat(item.fromUserId, item.entry, item.entryType)
+        }
+      }
     //   if(item.entryType == 'peopleOrBusiness') {
     //       Alert.alert("I'm a cat")
     //   } else {
@@ -79,7 +87,7 @@ export default class ChatList extends React.Component {
                 fromUserName: chatEntry.fromUserName,
                 toUserName: chatEntry.toUserName,
                 entryType: 'chatEntry',
-                name: chatEntry.userName,
+                name: (chatEntry.toUserName != "0000" ?  chatEntry.toUserName : chatEntry.fromUserName),
                 entry: chatEntry.entry
             })
         })

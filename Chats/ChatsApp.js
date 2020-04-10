@@ -3,26 +3,10 @@ import { View, Text, TextInput, Alert } from 'react-native'
 import { SearchBar } from 'react-native-elements';
 import ChatList from './ChatList';
 import PersonChat from './PersonChat';
+import people from '../Collections/People'
+import chats from '../Collections/Chats'
 
 import firestore from '@react-native-firebase/firestore';
-
-const chats = [
-    {
-        id: "0001",
-        entry: "Hey Zogbert! Jill's missing. Seen her around?",
-        prompt: "Seen Jill?",
-        fromUser: "0000",
-        touser: "0002"
-    },
-    {
-        id: "0002",
-        entry: "Zogbert you bum! Gimme my lawnmower back! You've had it for weeks!",
-        prompt: "Give me back my lawnmower!",
-        fromUser: "0000",
-        touser: "0002"
-    }
-]
-
 
 export default class ChatsApp extends React.Component {
 
@@ -54,19 +38,19 @@ export default class ChatsApp extends React.Component {
     }
 
     async loadChatData() {
-        const chats = await firestore()
-            .collection('people')
-            .get();
+        // const chats = await firestore()
+        //     .collection('people')
+        //     .get();
         
-        this.chats = chats.docs.map(chat => { return {...chat.data(), id: chat.id} })
+        this.chats = people
 
-        const chatEntries = await firestore()
-            .collection('chats')
-            .get();
+        // const chatEntries = await firestore()
+        //     .collection('chats')
+        //     .get();
         
-        this.chatEntries = chatEntries.docs.map(chatEntry => { 
-            return {...chatEntry.data(), id: chatEntry.id, toUserName: this.getUserName(chatEntry.data().toUserId),
-                fromUserName: this.getUserName(chatEntry.data().fromUserId)} 
+        this.chatEntries = chats.map(chatEntry => { 
+            return {...chatEntry, toUserName: this.getUserName(chatEntry.toUserId),
+                fromUserName: this.getUserName(chatEntry.fromUserId)}
         })
 
         this.setState({entriesFetched: true})
