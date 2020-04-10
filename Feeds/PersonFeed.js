@@ -2,6 +2,7 @@ import React from 'react'
 import { View, Text, TextInput, Button, FlatList, TouchableOpacity, StyleSheet, Alert } from 'react-native'
 import { SearchBar } from 'react-native-elements';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
+import feeds from '../Collections/Feeds';
 
 function Item({ item }) {
     return (
@@ -25,14 +26,14 @@ export default class PersonFeed extends React.Component {
         // }
 
         // parent component hasn't passed in loaded data
-        if(this.props.feedEntries.size == 0) {
-            return;
-        }
+        // if(this.props.feedEntries.size == 0) {
+        //     return;
+        // }
 
         this.feedEntries = []
 
         selectedUser = this.props.selectedUser
-        feedEntriesForSelectedUser = this.props.feedEntries.filter(feedEntry => feedEntry.user == selectedUser)
+        feedEntriesForSelectedUser = this.props.feedEntries.filter(feedEntry => feedEntry.userId == selectedUser)
         feedEntriesForSelectedUser.forEach(feedEntry => {
             this.feedEntries.push({
                 entryType: 'feedEntry',

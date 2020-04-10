@@ -4,6 +4,7 @@ import { SearchBar } from 'react-native-elements';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
 
 import firestore from '@react-native-firebase/firestore';
+import journalEntries from './Collections/JournalEntries';
 
 const DATA = {
     userJournalId: "15",
@@ -53,30 +54,20 @@ function Item({ entry }) {
 
 export default class JournalApp extends React.Component {
 
-    journalEntries = {
-        userJournalId: "15",
-        userId: "12",
-        userJournalEntries: []
-    }
+
 
     state = {
+        userJournalEntries: [],
         search: '',
         entriesFetched: false
     }
 
     async loadJournalEntries() {
-
-        const feeds = await firestore()
-            .collection('journalEntries')
-            .get();
         
-        journalEntries = this.props.journalEntries
-        this.journalEntries.userJournalEntries = feeds.docs.filter(doc => journalEntries.includes(doc.id))
-        this.journalEntries.userJournalEntries = this.journalEntries.userJournalEntries.map(entry => 
-            { 
-                return {...entry.data(), id:entry.id}
-            })
-        this.setState({entriesFetched: true});
+        userJournalEntries = journalEntries.filter(journalEntry => this.props.userState.journalEntries.includes(journalEntry.id))
+        this.setState({
+            userJournalEntries: userJournalEntries
+        })
         
         
         // Alert.alert(feeds)
@@ -112,7 +103,7 @@ export default class JournalApp extends React.Component {
                 </View>
                 <View style={journalStyles.journalPage}>
                     <FlatList
-                    data = {this.journalEntries.userJournalEntries}
+                    data = {this.state.userJournalEntries}
                     renderItem={({ item }) => this.renderThisItem(item, search)}
                     keyExtractor={(item, index) => index.toString()}
                     />

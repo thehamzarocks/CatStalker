@@ -37,24 +37,23 @@ import { GoogleSignin } from '@react-native-community/google-signin';
 
 // import { firestore } from 'firebase';
 import firestore from '@react-native-firebase/firestore';
+import quests from './Collections/Quests.js';
 
 const App: () => React$Node = () => {
 
-  const [signedInUser, setSignedInUserUser] = React.useState(null);
+  const [signedInUser, setSignedInUser] = React.useState(null);
   const [openApp, setOpenApp] = React.useState('journal');
-  const [currentState, setCurrentState] = React.useState('0001')
-  const [journalEntries, setJournalEntries] = React.useState(['0001'])
-  const [sentChats, setSentChats] = React.useState([])
-  const [availablePrompts, setAvailablePrompts] = React.useState([])
-
-
-  let stateMachine = {}
+  const [userState, setUserState] = React.useState({})
+  // const [currentState, setCurrentState] = React.useState('0001')
+  // const [journalEntries, setJournalEntries] = React.useState(['0001'])
+  // const [sentChats, setSentChats] = React.useState([])
+  // const [availablePrompts, setAvailablePrompts] = React.useState([])
 
   const unsubscribe = firebase.auth().onAuthStateChanged((user) => {
     if(user) {
       loadUserState(user)
     } else {
-      setSignedInUserUser(null)
+      setSignedInUser(null)
     }
   })
 
@@ -70,15 +69,15 @@ const App: () => React$Node = () => {
 
     const credential = firebase.auth.GoogleAuthProvider.credential(idToken, accessToken);
     const userCredential = await firebase.auth().signInWithCredential(credential);
-    intializeUserState(userCredential.user)
+    initializeUserState(userCredential.user)
   }
 
   async function signOut() {
     await firebase.auth().signOut()
-    setSignedInUserUser(null)
+    setSignedInUser(null)
   }
 
-  async function intializeUserState(user) {
+  async function initializeUserState(user) {
     Alert.alert("Initializing")
     const querySnapshot = await firestore().collection('users').where('email','==', user.email).get()
 
@@ -87,35 +86,42 @@ const App: () => React$Node = () => {
       await firestore().collection('users').add(data = {
         email: user.email,
         name: user.displayName,
-        currentState: '0001',
+        stateMachineState: '0001',
         journalEntries: ['0001'],
         friends: ['0001'],
         sentChats: [],
         availablePrompts: []
       })
-      await intializeStateMachine('0001')
-    } else {
-      await intializeStateMachine(querySnapshot.docs[0].get('currentState'))
     }
-    setSignedInUserUser(user);
+    await loadUserState(user)
   }
 
   async function loadUserState(user) {
     const querySnapshot = await firestore().collection('users').where('email','==', user.email).get()
-    // weird, this is happening on sign in also for some reason, so querySnapshot here is empty since
-    // the user hasn't been created yet. It will be created in the sign on process
+    // // weird, this is happening on sign in also for some reason, so querySnapshot here is empty since
+    // // the user hasn't been created yet. It will be created in the sign on process
     if(querySnapshot.empty) {
       return
     }
-    await intializeStateMachine(querySnapshot.docs[0].get('currentState'))
-    setSignedInUserUser(user)
+    userObject = querySnapshot.docs[0].data()
+    setUserState({
+      stateMachineState: userObject.stateMachineState,
+      journalEntries: userObject.journalEntries,
+      friends: userObject.friends,
+      sentChats: userObject.sentChats,
+      availablePrompts: userObject.availablePrompts
+    })
+    if(!signedInUser) {
+      setSignedInUser(user)
+    }
   }
 
-  async function intializeStateMachine(currentState) {
-    stateMachine = await firestore().collection('quests').where('name', '==', 'Find Jill').get()
-    stateMachine = stateMachine.docs[0].data()
-    setCurrentState(currentState)
-  }
+  // async function intializeStateMachine(currentState) {
+  //   stateMachine = await firestore().collection('quests').where('name', '==', 'Find Jill').get()
+  //   stateMachine = stateMachine.docs[0].data()
+  //   stateMachine = quests[0];
+  //   setCurrentState(currentState)
+  // }
 
   async function handleAction(actionObject) {
     transition = getMatchingTransition(actionObject)
@@ -124,43 +130,45 @@ const App: () => React$Node = () => {
     }
     // A transition matches our action, so update our state in the db
     userObject = await firestore().collection('users').where('email', '==', signedInUser.email).get()
-    await userObject.docs[0].ref.update({currentState: transition.toState})
-    setCurrentState(transition.toState)
+    await userObject.docs[0].ref.update({stateMachineState: transition.toState})
+    setUserState({...userState, stateMachineState: transition.toState})
     // TOOO: update the UI
-    actionsToPerform = transition.actions || []
-    for (const actionToPerform of actionsToPerform) {
-      if(actionToPerform.name == 'addJournalEntry') {
-        userObject = await firestore().collection('users').where('email', '==', signedInUser.email).get()
-        existingJournaEntries = userObject.docs[0].data().journalEntries || []
-        existingJournaEntries.push(actionToPerform.entry)
-        await userObject.docs[0].ref.update({journalEntries: existingJournaEntries})
-        setJournalEntries(existingJournaEntries)
-        Alert.alert("Journal Updated!")
+    actionsToExecute = transition.actionsToExecute || []
+    for (const actionToExecute of actionsToExecute) {
+      switch(actionToExecute.actionName) {
+        case 'addJournalEntry': {
+          userObject = await firestore().collection('users').where('email', '==', signedInUser.email).get()
+          existingJournaEntries = userObject.docs[0].data().journalEntries || []
+          existingJournaEntries.push(actionToExecute.entryId)
+          await userObject.docs[0].ref.update({journalEntries: existingJournaEntries})
+          setUserState({...userState, journalEntries: existingJournaEntries})
+          Alert.alert("Journal Updated!")
+        }
       }
     }
   }
 
   function getMatchingTransition(actionObject) {
-    stateObject = stateMachine.states.find(state => state.id == currentState)
+    stateObject = quests[0].states.find(state => state.id == userState.stateMachineState)
+    if(!stateObject) {
+      return;
+    }
     matchingTransition = stateObject.transitions.find(transition => isMatchingTransition(transition, actionObject))
     return matchingTransition
   }
 
   function isMatchingTransition(transition, actionObject) {
-    if(transition.app == actionObject.app && transition.action == actionObject.action) {
-      // Alert.alert("Hmm need to check params")
-      transitionParamKeys = Object.keys(transition.params)
-      actionParamKeys = Object.keys(actionObject.params)
-      paramsMatch = true
-      // TODO: check other way around also?
-      transitionParamKeys.forEach(key => {
-        if(transition.params[key] != actionObject.params[key]) {
-          paramsMatch = false
+    if(transition.transitionMatchers.app == actionObject.app && transition.transitionMatchers.action == actionObject.action) {
+      switch(actionObject.action) {
+        case 'openFeedEntry': {
+          if (actionObject.userId == transition.transitionMatchers.userId) {
+            return true;
+          }
+          return false; 
         }
-      })
-      return paramsMatch
+       default: return false
+      }
     }
-    return false
   }
 
 
@@ -176,7 +184,7 @@ const App: () => React$Node = () => {
         <>
           <SafeAreaView style={styles.container}>
             <Button title="sign out" onPress={signOut} />
-            <Window openApp={openApp} handleAction={handleAction} journalEntries={journalEntries} style={styles.window}/>
+            <Window openApp={openApp} userState={userState} handleAction={handleAction} style={styles.window}/>
             <AppBar setOpenApp={setOpenApp} style={styles.appBar}/>
           </SafeAreaView>
         </>

@@ -76,7 +76,7 @@ export default class PeopleFeedList extends React.Component {
 
         this.props.feedEntries.forEach(feedEntry => {
             this.feedList.push({
-                userId: feedEntry.user,
+                userId: feedEntry.userId,
                 entryType: 'feedEntry',
                 name: feedEntry.userName,
                 entry: feedEntry.entry

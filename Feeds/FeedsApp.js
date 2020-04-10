@@ -3,13 +3,15 @@ import { View, Text, TextInput, Alert } from 'react-native'
 import { SearchBar } from 'react-native-elements';
 import PeopleFeedList from './PeopleFeedList';
 import PersonFeed from './PersonFeed';
+import feeds from '../Collections/Feeds'
+import people from '../Collections/People'
 
 import firestore from '@react-native-firebase/firestore';
 
 
 export default class FeedsApp extends React.Component {
 
-    feeds = []
+    feeds = people
     feedEntries = []
 
     loadUserFeed = this.loadUserFeed.bind(this)
@@ -23,9 +25,7 @@ export default class FeedsApp extends React.Component {
         this.props.handleAction({
             app: 'feeds',
             action: 'openFeedEntry',
-            params: {
-                id: userId
-            }
+            userId: userId
         })
     }
 
@@ -37,18 +37,18 @@ export default class FeedsApp extends React.Component {
     }
 
     async loadFeedData() {
-        const feeds = await firestore()
-            .collection('people')
-            .get();
+        // const feeds = await firestore()
+        //     .collection('people')
+        //     .get();
         
-        this.feeds = feeds.docs.map(feed => { return {...feed.data(), id: feed.id} })
+        // this.feeds = feeds.docs.map(feed => { return {...feed.data(), id: feed.id} })
 
-        const feedEntries = await firestore()
-            .collection('feeds')
-            .get();
+        // const feedEntries = await firestore()
+        //     .collection('feeds')
+        //     .get();
         
-        this.feedEntries = feedEntries.docs.map(feedEntry => { 
-            return {...feedEntry.data(), id: feedEntry.id, userName: this.getUserName(feedEntry.data().user)} 
+        this.feedEntries = feeds.map(feedEntry => { 
+            return {...feedEntry, userName: this.getUserName(feedEntry.userId)}
         })
 
         this.setState({entriesFetched: true})
