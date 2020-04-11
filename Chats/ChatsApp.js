@@ -37,7 +37,7 @@ export default class ChatsApp extends React.Component {
         })
     }
 
-    async loadChatData() {
+    loadChatData() {
         // const chats = await firestore()
         //     .collection('people')
         //     .get();
@@ -57,7 +57,7 @@ export default class ChatsApp extends React.Component {
             return sentChats.includes(chatEntry.id)
         })
 
-        this.setState({entriesFetched: true})
+        // this.setState({entriesFetched: true})
     }
 
     // Assume people data is already fetched into chats
@@ -67,10 +67,6 @@ export default class ChatsApp extends React.Component {
         }
         matchingPerson = this.chats.find(chat => chat.id == userId)
         return matchingPerson.name
-    }
-
-    componentDidMount() {
-        this.loadChatData()
     }
 
     state = {
@@ -89,11 +85,13 @@ export default class ChatsApp extends React.Component {
               case 'list': return <ChatList chats={this.chats} chatEntries={this.chatEntries} search={this.state.search}
               loadUserChat={this.loadUserChat} userState={this.props.userState}  />
               case 'chat': return <PersonChat chatEntries={this.chatEntries} selectedUser={this.state.selectedUser}
-                search={this.state.search} goToChats={this.goToChats} userState={this.props.userState}/>
+                search={this.state.search} goToChats={this.goToChats} userState={this.props.userState}
+                setUserState={this.props.setUserState}/>
           }
       }
 
     render() {
+        this.loadChatData()
         const { search } = this.state;
         return (
             <View>

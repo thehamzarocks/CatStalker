@@ -11,7 +11,8 @@ export default function Window(props) {
         switch(appName) {
             case 'feeds': return <FeedsApp appName={appName} handleAction={props.handleAction} userState={props.userState} />
             case 'maps': return <MapsApp appName={appName} handleAction={props.handleAction} userState={props.userState} />
-            case 'chats': return <ChatsApp appName={appName} handleAction={props.handleAction} userState={props.userState} />
+            case 'chats': return <ChatsApp appName={appName} handleAction={props.handleAction} userState={props.userState}
+                setUserState={props.setUserState} />
             case 'journal': return <JournalApp appName={appName} handleAction={props.handleAction} userState={props.userState} />
         }
     }

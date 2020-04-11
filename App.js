@@ -44,6 +44,12 @@ const App: () => React$Node = () => {
   const [signedInUser, setSignedInUser] = React.useState(null);
   const [openApp, setOpenApp] = React.useState('journal');
   const [userState, setUserState] = React.useState({})
+
+  function updateUserState(stateObject) {
+    Alert.alert(JSON.stringify(stateObject.sentChats))
+
+    setUserState(stateObject)
+  }
   // const [currentState, setCurrentState] = React.useState('0001')
   // const [journalEntries, setJournalEntries] = React.useState(['0001'])
   // const [sentChats, setSentChats] = React.useState([])
@@ -193,7 +199,7 @@ const App: () => React$Node = () => {
         <>
           <SafeAreaView style={styles.container}>
             <Button title="sign out" onPress={signOut} />
-            <Window openApp={openApp} userState={userState} handleAction={handleAction} style={styles.window}/>
+            <Window openApp={openApp} userState={userState} setUserState={updateUserState} handleAction={handleAction} style={styles.window}/>
             <AppBar setOpenApp={setOpenApp} style={styles.appBar}/>
           </SafeAreaView>
         </>

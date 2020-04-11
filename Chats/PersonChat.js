@@ -4,6 +4,8 @@ import { SearchBar } from 'react-native-elements';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
 import chats from '../Collections/Chats';
 
+import firestore from '@react-native-firebase/firestore';
+
 function Item({ item }) {
     return (
       <TouchableOpacity
@@ -14,31 +16,14 @@ function Item({ item }) {
     );
   }
 
-  function PromptItem({item, userState}) {
+  function PromptItem({item, sendMessage}) {
       return (
           <TouchableOpacity
             style={feedListStyle.personStyle}
-            onPress={() => sendMessageAndHandleAction(item, userState)}>
+            onPress={() => sendMessage(item)}>
                 <Text>{item.prompt}</Text>
             </TouchableOpacity>
       )
-  }
-
-  async function sendMessageAndHandleAction(item, userState) {
-      // remove prompts for this chat from state
-      existingAvailablePrompts = userState.availablePrompts
-      promptIdsForChat = this.prompts.map(prompt => prompt.id)
-      existingAvailablePrompts.filter(prompt => {
-          return !promptIdsForChat.includes(prompt.id)
-      })
-      const userObject = await firestore().collection('users').where('email', '==', userState.user.email).get()
-      await userObject.docs[0].ref.update({availablePrompts: existingAvailablePrompts})
-      
-      this.prompts = []
-      // set the message to sent
-      existingSentChats = userState.sentChats
-      existingSentChats.push(item.id)
-      await userObject.docs[0].ref.update({sentChats: existingSentChats})
   }
 
 export default class PersonChat extends React.Component {
@@ -81,6 +66,30 @@ export default class PersonChat extends React.Component {
         })
     }
 
+    sendMessage = this.sendMessage.bind(this)
+    async sendMessage(item) {
+        // remove prompts for this chat from state
+        
+        existingAvailablePrompts = this.props.userState.availablePrompts
+        promptIdsForChat = this.prompts.map(prompt => prompt.id)
+        existingAvailablePrompts = existingAvailablePrompts.filter(prompt => {
+            return !promptIdsForChat.includes(prompt)
+        })
+        const userObject = await firestore().collection('users').where('email', '==', this.props.userState.signedInUser.email).get()
+        await userObject.docs[0].ref.update({availablePrompts: existingAvailablePrompts})
+        // this.props.setUserState({...this.props.userState, availablePrompts: existingAvailablePrompts})
+        
+        this.prompts = []
+        // set the message to sent
+        existingSentChats = this.props.userState.sentChats
+        existingSentChats.push(item.id)
+        await userObject.docs[0].ref.update({sentChats: existingSentChats})
+        this.props.setUserState({...this.props.userState, availablePrompts: existingAvailablePrompts, sentChats: existingSentChats})
+  
+        // handle action
+  
+    }
+
     renderChat(item, search) {
         if(item.fromUserId != '0000') {
             if(item.fromUserName.toLowerCase().includes(search.toLowerCase()) || item.entry.toLowerCase().includes(search.toLowerCase())) {
@@ -94,8 +103,8 @@ export default class PersonChat extends React.Component {
         return null
     }
 
-    renderPrompt(item, userState) {
-        return <PromptItem item={item} userState={userState}/>
+    renderPrompt(item) {
+        return <PromptItem item={item} sendMessage={this.sendMessage} />
     }
 
     render() {
@@ -111,7 +120,7 @@ export default class PersonChat extends React.Component {
                 />
                 <FlatList
                         data = {this.prompts}
-                        renderItem={({ item }) => this.renderPrompt(item, this.props.userState)}
+                        renderItem={({ item }) => this.renderPrompt(item)}
                         keyExtractor={(item, index) => index.toString()}
                 />
             </View>
