@@ -152,7 +152,6 @@ const App: () => React$Node = () => {
           break;
         }
         case 'addAvailablePrompts': {
-          Alert.alert(JSON.stringify(userState))
           existingAvailablePrompts = userState.availablePrompts
           existingAvailablePrompts = existingAvailablePrompts.concat(actionToExecute.promptsToAdd)
           await userObject.docs[0].ref.update({availablePrompts: existingAvailablePrompts})
@@ -180,6 +179,12 @@ const App: () => React$Node = () => {
             return true;
           }
           return false; 
+        }
+        case 'sendMessage': {
+          if(transition.transitionMatchers.messageIds.includes(actionObject.messageId)) {
+            return true;
+          }
+          return false;
         }
        default: return false
       }

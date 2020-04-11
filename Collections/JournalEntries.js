@@ -11,5 +11,9 @@ const journalEntries = [
         id: "0003",
         entry: "Looks like Zogbert isn't responding - probably at one of his parties. Should check his feed."
     },
+    {
+        id: "0004",
+        entry: "He's at one of his silly music fests again. I can travel there using the Maps app"
+    },
 ]
 export default journalEntries

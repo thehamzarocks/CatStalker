@@ -30,6 +30,15 @@ export default class ChatsApp extends React.Component {
         })
     }
 
+    handleSendMessageAction = this.handleSendMessageAction.bind(this)
+    handleSendMessageAction(message) {
+        this.props.handleAction({
+            app: 'chats',
+            action: 'sendMessage',
+            messageId: message.id
+        })
+    }
+
     goToChats() {
         this.setState({
             listOrChat: 'list',
@@ -86,7 +95,7 @@ export default class ChatsApp extends React.Component {
               loadUserChat={this.loadUserChat} userState={this.props.userState}  />
               case 'chat': return <PersonChat chatEntries={this.chatEntries} selectedUser={this.state.selectedUser}
                 search={this.state.search} goToChats={this.goToChats} userState={this.props.userState}
-                setUserState={this.props.setUserState}/>
+                setUserState={this.props.setUserState} handleSendMessageAction={this.handleSendMessageAction}/>
           }
       }
 

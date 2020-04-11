@@ -85,7 +85,7 @@ export default class PersonChat extends React.Component {
         existingSentChats.push(item.id)
         await userObject.docs[0].ref.update({sentChats: existingSentChats})
         this.props.setUserState({...this.props.userState, availablePrompts: existingAvailablePrompts, sentChats: existingSentChats})
-  
+        this.props.handleSendMessageAction(item)
         // handle action
   
     }
