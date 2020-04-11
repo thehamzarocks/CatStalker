@@ -13,7 +13,7 @@ const journalEntries = [
     },
     {
         id: "0004",
-        entry: "He's at one of his silly music fests again. I can travel there using the Maps app"
+        entry: "He's at one of his silly music fests again. I can travel there using the Maps app."
     },
 ]
 export default journalEntries
