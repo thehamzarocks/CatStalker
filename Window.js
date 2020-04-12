@@ -1,7 +1,7 @@
 import React from 'react'
 import { View, Text } from 'react-native'
 import FeedsApp from './Feeds/FeedsApp'
-import MapsApp from './MapsApp'
+import MapsApp from './Maps/MapsApp'
 import ChatsApp from './Chats/ChatsApp'
 import JournalApp from './JournalApp'
 
