@@ -5,6 +5,7 @@ export default async function getMatchingTransitionAndHandleAction(actionObject,
     switch(actionObject.action) {
         case 'openFeedEntry': handleOpenFeedEntryAction(actionObject, userState, updateUserState); break;
         case 'sendMessage': handleSendMessageAction(actionObject, userState, updateUserState); break;
+        case 'goToLocation': handleGoToLocationAction(actionObject, userState, updateUserState); break;
     }
 }
 
@@ -70,7 +71,7 @@ async function handleOpenFeedEntryAction(actionObject, userState, updateUserStat
                 },
                 {
                     actionName: "addJournalEntry",
-                    entryId: "0002"
+                    entryId: "0004"
                 },
             ]
         },
@@ -108,6 +109,40 @@ async function handleSendMessageAction(actionObject, userState, updateUserState)
                 {
                     actionName: "addJournalEntry",
                     entryId: "0003"
+                },
+            ]
+        }
+    ]
+
+    for (const transition of transitions) {
+        if(transition.condition(messageId, states) === true) {
+            const userObject = await firestore().collection('users').where('email', '==', userState.signedInUser.email).get()
+            currentStates = transition.stateActions(states)
+            await userObject.docs[0].ref.update({currentStates: currentStates})
+            updateUserState({...userState, currentStates: currentStates})
+            executeActions(transition.actionsToExecute, userState, updateUserState, userObject)
+        }
+    }
+}
+
+async function handleGoToLocationAction(actionObject, userState, updateUserState) {
+    locationId = actionObject.locationId
+    states = userState.currentStates || []
+    const transitions = [
+        {
+            name: "Arrived at the GarageTown Music Festival",
+            condition: (messageId, states) => {
+                return (locationId === '0002' && states.includes('zogbert_at_gt'))
+            },
+            stateActions: (states) => {
+                currentStates = [...states, 'arrived_at_gt']
+                currentStates = currentStates.filter(state => state != 'zogbert_at_gt')
+                return currentStates
+            },
+            actionsToExecute: [
+                {
+                    actionName: "addJournalEntry",
+                    entryId: "0005"
                 },
             ]
         }
