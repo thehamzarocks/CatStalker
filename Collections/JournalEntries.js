@@ -15,5 +15,15 @@ const journalEntries = [
         id: "0004",
         entry: "He's at one of his silly music fests again. I can travel there using the Maps app."
     },
+    {
+        id: "0005",
+        entry: "Whew that was a long drive. I can hear the noise these cats call music from all the way over here." +
+        "This guy here tells me Zogbert usually hangs with a Mr. Luke. I really hope the trip was worth it."
+    },
+    {
+        id: "0006",
+        entry: "I'm at Felix High. Mr. Luke probably hangs out with the girls from here, what a perv." +
+        "Anyway, the guard won't let me in without an id."
+    },
 ]
 export default journalEntries

@@ -17,5 +17,17 @@ const feeds = [
         type: "Public",
         userId: "0003"
     },
+    {
+        id: "0004",
+        entry: "At GT! Keep away from me, wannabe posers",
+        type: "Public",
+        userId: "0004"
+    },
+    {
+        id: "0005",
+        entry: "These cute young cats should be doing their homework. But looks like I'm going to be working them in my home heh",
+        type: "Public",
+        userId: "0004"
+    },
 ]
 export default feeds

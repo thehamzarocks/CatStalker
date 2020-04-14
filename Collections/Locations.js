@@ -1,9 +1,10 @@
 import { Colors } from "react-native/Libraries/NewAppScreen"
 
-const regions = [
+const locations = [
     {
         id: '0001',
-        name: 'Purr Haven',
+        regionId: '0001',
+        name: 'Sunkissed Meadows',
         cx: '70',
         cy: '85',
         r: '15',
@@ -11,7 +12,8 @@ const regions = [
     },
     {
         id: '0002',
-        name: 'Felix Lake',
+        regionId: '0002',
+        name: 'GarageTown Music Festival',
         cx: '30',
         cy: '80',
         r: '7.5',
@@ -19,11 +21,12 @@ const regions = [
     },
     {
         id: '0003',
-        name: 'MilkJugs County',
+        regionId: '0002',
+        name: 'Felix High',
         cx: '75',
         cy: '20',
         r: '20',
         color: Colors.lighter
     }
 ]
-export default regions
+export default locations

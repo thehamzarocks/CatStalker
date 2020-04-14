@@ -17,5 +17,11 @@ const people = [
         description: "Official Channel for the Greatest Show in Feline-Town!",
         type: "business"
     },
+    {
+        id: "0004",
+        name: "Luke King",
+        description: "Think you can make music? Please.",
+        type: "individual"
+    },
 ]
 export default people

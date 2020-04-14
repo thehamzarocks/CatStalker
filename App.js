@@ -38,6 +38,7 @@ import { GoogleSignin } from '@react-native-community/google-signin';
 // import { firestore } from 'firebase';
 import firestore from '@react-native-firebase/firestore';
 import quests from './Collections/Quests.js';
+import getMatchingTransitionAndHandleAction from './ActionHandler.js';
 
 const App: () => React$Node = () => {
 
@@ -92,11 +93,12 @@ const App: () => React$Node = () => {
       await firestore().collection('users').add(data = {
         email: user.email,
         name: user.displayName,
-        stateMachineState: '0001',
+        currentStates: ['0001'],
         journalEntries: ['0001'],
         friends: ['0001'],
         sentChats: [],
-        availablePrompts: []
+        availablePrompts: [],
+        currentLocation: '0001'
       })
     }
     await loadUserState(user)
@@ -111,11 +113,12 @@ const App: () => React$Node = () => {
     }
     userObject = querySnapshot.docs[0].data()
     setUserState({
-      stateMachineState: userObject.stateMachineState,
+      currentStates: userObject.currentStates,
       journalEntries: userObject.journalEntries,
       friends: userObject.friends,
       sentChats: userObject.sentChats,
       availablePrompts: userObject.availablePrompts,
+      currentLocation: userObject.currentLocation,
       signedInUser: user
     })
     if(!signedInUser) {
@@ -131,10 +134,13 @@ const App: () => React$Node = () => {
   // }
 
   async function handleAction(actionObject) {
+    getMatchingTransitionAndHandleAction(actionObject, userState, updateUserState)
+    return
     transition = getMatchingTransition(actionObject)
     if (!transition) {
       return;
     }
+    Alert.alert('found match')
     // A transition matches our action, so update our state in the db
     const userObject = await firestore().collection('users').where('email', '==', signedInUser.email).get()
     await userObject.docs[0].ref.update({stateMachineState: transition.toState})
@@ -174,18 +180,9 @@ const App: () => React$Node = () => {
   function isMatchingTransition(transition, actionObject) {
     if(transition.transitionMatchers.app == actionObject.app && transition.transitionMatchers.action == actionObject.action) {
       switch(actionObject.action) {
-        case 'openFeedEntry': {
-          if (actionObject.userId == transition.transitionMatchers.userId) {
-            return true;
-          }
-          return false; 
-        }
-        case 'sendMessage': {
-          if(transition.transitionMatchers.messageIds.includes(actionObject.messageId)) {
-            return true;
-          }
-          return false;
-        }
+        case 'openFeedEntry': return (actionObject.userId == transition.transitionMatchers.userId)
+        case 'sendMessage': (transition.transitionMatchers.messageIds.includes(actionObject.messageId))
+        case 'goToLocation': return (transition.transitionMatchers.locationId === actionObject.locationId)
        default: return false
       }
     }

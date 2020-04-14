@@ -50,7 +50,7 @@ const quests = [
             },
             {
                 id: "0003",
-                name: "texted Zogbert but not response",
+                name: "texted Zogbert but no response",
                 transitions: [
                     {
                         transitionMatchers: {
@@ -64,6 +64,82 @@ const quests = [
                                 actionName: "addJournalEntry",
                                 entryId: "0004"
                             },
+                        ]
+                    }
+                ]
+            },
+            {
+                id: "0004",
+                name: "Zogbert's probably at the GarageTown Music Festival",
+                transitions: [
+                    {
+                        transitionMatchers: {
+                            app: "maps",
+                            action: "goToLocation",
+                            locationId: '0002'
+                        },
+                        toState: "0005",
+                        actionsToExecute: [
+                            {
+                                actionName: "addJournalEntry",
+                                entryId: "0005"
+                            },
+                        ]
+                    }
+                ]
+            },
+            {
+                id: "0005",
+                name: "Zogbert's with Mr. Luke",
+                transitions: [
+                    {
+                        transitionMatchers: {
+                            app: "feeds",
+                            action: "openFeedEntry",
+                            userId: "0004"
+                        },
+                        toState: "0006",
+                        actionsToExecute: [
+                        ]
+                    }
+                ]
+            },
+            {
+                id: "0006",
+                name: "Checked Mr. Luke's Feed",
+                transitions: [
+                    {
+                        transitionMatchers: {
+                            app: "maps",
+                            action: "goToLocation",
+                            userId: "0003"
+                        },
+                        toState: "0007",
+                        actionsToExecute: [
+                            {
+                                actionName: "addJournalEntry",
+                                entryId: "0006"
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                id: "0007",
+                name: "At Felix High",
+                transitions: [
+                    {
+                        transitionMatchers: {
+                            app: "feeds",
+                            action: "goToLocation",
+                            userId: "0003"
+                        },
+                        toState: "0007",
+                        actionsToExecute: [
+                            {
+                                actionName: "addJournalEntry",
+                                entryId: "0006"
+                            }
                         ]
                     }
                 ]

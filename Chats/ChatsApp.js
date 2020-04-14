@@ -6,8 +6,6 @@ import PersonChat from './PersonChat';
 import people from '../Collections/People'
 import chats from '../Collections/Chats'
 
-import firestore from '@react-native-firebase/firestore';
-
 export default class ChatsApp extends React.Component {
 
     chats = []
