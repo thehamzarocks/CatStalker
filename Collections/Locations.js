@@ -27,6 +27,15 @@ const locations = [
         cy: '20',
         r: '20',
         color: Colors.lighter
+    },
+    {
+        id: '0004',
+        regionId: '0002',
+        name: 'Fishing Waters',
+        cx: '60',
+        cy: '18',
+        r: '7.5',
+        color: 'lightblue'
     }
 ]
 export default locations

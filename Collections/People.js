@@ -23,5 +23,11 @@ const people = [
         description: "Think you can make music? Please.",
         type: "individual"
     },
+    {
+        id: "0005",
+        name: "Alice BuckingWorth",
+        description: "Prepping for college while still enjoying my life!",
+        type: "individual"
+    }
 ]
 export default people

@@ -47,7 +47,6 @@ const App: () => React$Node = () => {
   const [userState, setUserState] = React.useState({})
 
   function updateUserState(stateObject) {
-    Alert.alert(JSON.stringify(stateObject.sentChats))
 
     setUserState(stateObject)
   }
@@ -93,7 +92,7 @@ const App: () => React$Node = () => {
       await firestore().collection('users').add(data = {
         email: user.email,
         name: user.displayName,
-        currentStates: ['0001'],
+        currentStates: ['start'],
         journalEntries: ['0001'],
         friends: ['0001'],
         sentChats: [],

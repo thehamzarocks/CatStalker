@@ -29,5 +29,23 @@ const feeds = [
         type: "Public",
         userId: "0004"
     },
+    {
+        id: "0006",
+        entry: "Skipped the boring math class and caught a huuge snapper! Too bad I never learnt to count up to its weight. JK",
+        type: "Public",
+        userId: "0005"
+    },
+    {
+        id: "0007",
+        entry: "Lucky to have GT so close to Felix High - now I have more reasons to skip classes!",
+        type: "Public",
+        userId: "0005"
+    },
+    {
+        id: "0008",
+        entry: "Taking a break out from all the partying to relax and unwind a bit",
+        type: "Public",
+        userId: "0005"
+    }
 ]
 export default feeds
