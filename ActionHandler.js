@@ -37,10 +37,31 @@ async function handleOpenFeedEntryAction(actionObject, userState, updateUserStat
         {
             name: "Opened Jill's Feed in he beginning",
             condition: (userId, states) => {
-                return (userId === '0001' && states.length === 1 && states[0] === '0001')
+                return (userId === '0001' && states.length === 1 && states[0] === 'start')
             },
-            stateActions: () => {
-                return ['0002']
+            stateActions: (states) => {
+                return ['jill_feed_checked']
+            },
+            actionsToExecute: [
+                {
+                    actionName: "addAvailablePrompts",
+                    promptsToAdd: ['0001', '0002']
+                },
+                {
+                    actionName: "addJournalEntry",
+                    entryId: "0002"
+                },
+            ]
+        },
+        {
+            name: "Opened Zogbert's Feed - says he's at the GarageTown Music Festival",
+            condition: (userId, states) => {
+                return (userId === '0002' && states.includes('zogbert_texted_no_response'))
+            },
+            stateActions: (states) => {
+                currentStates = [...states, 'zogbert_at_gt']
+                currentStates = currentStates.filter(state => state != 'zogbert_texted_no_response')
+                return currentStates
             },
             actionsToExecute: [
                 {
@@ -57,7 +78,7 @@ async function handleOpenFeedEntryAction(actionObject, userState, updateUserStat
     for (const transition of transitions) {
         if(transition.condition(userId, states) === true) {
             const userObject = await firestore().collection('users').where('email', '==', userState.signedInUser.email).get()
-            currentStates = transition.stateActions()
+            currentStates = transition.stateActions(states)
             await userObject.docs[0].ref.update({currentStates: currentStates})
             updateUserState({...userState, currentStates: currentStates})
             executeActions(transition.actionsToExecute, userState, updateUserState, userObject)
@@ -72,10 +93,16 @@ async function handleSendMessageAction(actionObject, userState, updateUserState)
         {
             name: "Texted Zogbert but no response",
             condition: (messageId, states) => {
-                return (['0001', '0002'].includes(messageId) && states.length === 1 && states[0] === '0002')
+                return (['0001', '0002'].includes(messageId) && states.length === 1 && states[0] === 'jill_feed_checked')
             },
-            stateActions: () => {
-                return ['0003']
+            stateActions: (states) => {
+                textState = ''
+                if(messageId === '0001') {
+                    textState = 'asked_zogbert_about_jill'
+                } else if(messageId === '0002') {
+                    textState = 'asked_zogbert_about_lawnmower'
+                }
+                return ['zogbert_texted_no_response', textState]
             },
             actionsToExecute: [
                 {
@@ -89,7 +116,7 @@ async function handleSendMessageAction(actionObject, userState, updateUserState)
     for (const transition of transitions) {
         if(transition.condition(messageId, states) === true) {
             const userObject = await firestore().collection('users').where('email', '==', userState.signedInUser.email).get()
-            currentStates = transition.stateActions()
+            currentStates = transition.stateActions(states)
             await userObject.docs[0].ref.update({currentStates: currentStates})
             updateUserState({...userState, currentStates: currentStates})
             executeActions(transition.actionsToExecute, userState, updateUserState, userObject)
