@@ -11,6 +11,7 @@ const journalEntries = [
         id: "0003",
         entry: "Looks like Zogbert isn't responding - probably at one of his parties. Should check his feed."
     },
+    // What if you're already at the festival?
     {
         id: "0004",
         entry: "He's at one of his silly music fests again. I can travel there using the Maps app."
@@ -67,6 +68,15 @@ const journalEntries = [
     {
         id: "0014",
         entry: "I've snatched the school directory while no one was looking. Now I have their numbers."
+    },
+    {
+        id: "0015",
+        entry: "Well, those brats were of no help. Maybe someone else knows?"
+    },
+    {
+        id: "0016",
+        entry: "Principal Mary says it was one of her students. Words can't describe how relieved I am right now. " +
+        "I still need to find Jill though. Hmm, now where was she last seen?"
     }
 ]
 export default journalEntries

@@ -107,7 +107,7 @@ const goToLocationTransitions = [
         ]
     },
     {
-        name: "Arrived at GT to create commotion after finding out about drowning but Zogbert rescues",
+        name: "Arrived at GT to create commotion after finding out about drowning, Zogbert is mad",
         condition: (locationId, states) => {
             return (locationId === '0002' && states.includes('entered_school_with_id') && 
                 states.includes('asked_zogbert_about_lawnmower'))
@@ -134,6 +134,10 @@ const goToLocationTransitions = [
             {
                 actionName: "addMessage",
                 messageId: "0009"
+            },
+            {
+                actionName: "addAvailablePrompts",
+                promptsToAdd: ['0010']
             }
         ]
     },
@@ -149,6 +153,22 @@ const goToLocationTransitions = [
             {
                 actionName: "addJournalEntry",
                 entryId: "0013"
+            },
+            {
+                actionName: "addAvailablePrompts",
+                promptsToAdd: ['0014']
+            },
+            {
+                actionName: "addAvailablePrompts",
+                promptsToAdd: ['0016', '0018']
+            },
+            {
+                actionName: "addAvailablePrompts",
+                promptsToAdd: ['0020']
+            },
+            {
+                actionName: "addAvailablePrompts",
+                promptsToAdd: ['0022']
             }
         ]
     }
