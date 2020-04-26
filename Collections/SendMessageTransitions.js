@@ -19,6 +19,56 @@ const sendMessageTransitions = [
                 entryId: "0003"
             },
         ]
+    },
+    {
+        name: "Say you heard about a drowning at Felix High",
+        condition: (messageId, states) => {
+            return messageId === '0005'
+        },
+        stateActions: (states) => {
+            return ['mentioned_drowning_to_zogbert']
+        },
+        actionsToExecute: [
+            {
+                actionName: "addJournalEntry",
+                entryId: "0012"
+            },
+            {
+                actionName: "addMessage",
+                messageId: "0006"
+            },
+            {
+                actionName: "addMessage",
+                messageId: "0007"
+            }
+        ]
+    },
+    {
+        name: "Say Jill's might've drowned because of Zogbert",
+        condition: (messageId, states) => {
+            return messageId === '0010'
+        },
+        stateActions: (states) => {
+            return ['mentioned_drowning_to_zogbert']
+        },
+        actionsToExecute: [
+            {
+                actionName: "addJournalEntry",
+                entryId: "0012"
+            },
+            {
+                actionName: "addMessage",
+                messageId: "0011"
+            },
+            {
+                actionName: "addMessage",
+                messageId: "0012"
+            },
+            {
+                actionName: "addMessage",
+                messageId: "0013"
+            }
+        ]
     }
 ]
 export default sendMessageTransitions

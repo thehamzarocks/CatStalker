@@ -38,7 +38,7 @@ const openFeedEntryTransitions = [
     {
         name: "Opened Alice's feed. She likes fishing",
         condition: (userId, states) => {
-            return (userId === '0005' && states.includes('arrived_at_gt'))
+            return (userId === '0005' && states.includes('arrived_at_gt') && !states.includes('alice likes fishing'))
         },
         stateActions: (states) => {
             return [...states, 'alice_likes_fishing']

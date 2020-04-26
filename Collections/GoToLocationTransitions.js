@@ -136,6 +136,21 @@ const goToLocationTransitions = [
                 messageId: "0009"
             }
         ]
+    },
+    {
+        name: "Checking the bulletin at Felix High for more details on the drowning",
+        condition: (locationId, states) => {
+            return (locationId === '0003' && states.includes('mentioned_drowning_to_zogbert'))
+        },
+        stateActions: (states) => {
+            return ['checked_bulletin_for_drowning_details']
+        },
+        actionsToExecute: [
+            {
+                actionName: "addJournalEntry",
+                entryId: "0013"
+            }
+        ]
     }
 ]
 export default goToLocationTransitions

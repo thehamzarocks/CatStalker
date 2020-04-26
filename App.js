@@ -120,6 +120,7 @@ const App: () => React$Node = () => {
       currentLocation: userObject.currentLocation,
       signedInUser: user
     })
+    // setOpenApp('journal')
     if(!signedInUser) {
       setSignedInUser(user)
     }

@@ -89,6 +89,91 @@ const chats = [
         prompt: "",
         fromUserId: "0002",
         toUserId: "0000"
+    },
+    {
+        id: "0014",
+        entry: "Geoff! I need to know! The cat you drowned, what did she look like?",
+        prompt: "What did the drowned cat look like?",
+        fromUserId: "0000",
+        toUserId: "0006"
+    },
+    {
+        id: "0015",
+        entry: "Mother says I'm not to speak a word about this until I consult my lawyer. Hey who are you anyway?",
+        prompt: "",
+        fromUserId: "0006",
+        toUserId: "0000"
+    },
+    {
+        id: "0016",
+        entry: "Prune! I'm going to make your face look like a prune. What did the cat look like?",
+        prompt: "What did the cat look like, prune-face?",
+        fromUserId: "0000",
+        toUserId: "0007"
+    },
+    {
+        id: "0017",
+        entry: "Buzz off, creep. I'd hate for you to get hurt",
+        prompt: "",
+        fromUserId: "0007",
+        toUserId: "0000"
+    },
+    {
+        id: "0018",
+        entry: "Mr. Williams. What did the cat you drowned look like?",
+        prompt: "What did the cat look like, Mr. Williams?",
+        fromUserId: "0000",
+        toUserId: "0007"
+    },
+    {
+        id: "0019",
+        entry: "I don't talk to creepy strangers over the internet. Buzz off.",
+        prompt: "",
+        fromUserId: "0007",
+        toUserId: "0000"
+    },
+    {
+        id: "0020",
+        entry: "Mikey. I need to know about the drowning. What did the cat look like?",
+        prompt: "What did the cat look like, Mikey",
+        fromUserId: "0000",
+        toUserId: "0008"
+    },
+    {
+        id: "0021",
+        entry: "Drab, like all the other cats here. And like you. Now stop bothering me.",
+        prompt: "",
+        fromUserId: "0008",
+        toUserId: "0000"
+    },
+    {
+        id: "0022",
+        entry: "Principal Mary, my cat's been missing for some time and the drowning incident concerns me.",
+        prompt: "Principal, about the drowning...",
+        fromUserId: "0000",
+        toUserId: "0009"
+    },
+    {
+        id: "0023",
+        entry: "Ah, that was apalling indeed. The police are involved now. " +
+        "I hope those students get the punishment they deserve.",
+        prompt: "",
+        fromUserId: "0009",
+        toUserId: "0000"
+    },
+    {
+        id: "0024",
+        entry: "Tail was her name. One of our brightest students too. Sadly, she was an easy target for some of the other students.",
+        prompt: "",
+        fromUserId: "0009",
+        toUserId: "0000"
+    },
+    {
+        id: "0025",
+        entry: "Say, you don't happen to be her owner do you?",
+        prompt: "",
+        fromUserId: "0009",
+        toUserId: "0000"
     }
 ]
 export default chats

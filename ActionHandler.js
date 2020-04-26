@@ -13,31 +13,31 @@ export default async function getMatchingTransitionAndHandleAction(actionObject,
 }
 
 async function executeActions(actionsToExecute, userState, updateUserState, userObject) {
+    updatedJournalEntries = userState.journalEntries
+    updatedAvailablePrompts = userState.availablePrompts
+    updatedMessages = userState.sentChats
     for (const actionToExecute of actionsToExecute) {
         switch(actionToExecute.actionName) {
           case 'addJournalEntry': {
-            existingJournaEntries = userState.journalEntries
-            existingJournaEntries.push(actionToExecute.entryId)
-            await userObject.docs[0].ref.update({journalEntries: existingJournaEntries})
-            updateUserState({...userState, journalEntries: existingJournaEntries})
-            Alert.alert("Journal Updated!")
+            updatedJournalEntries.push(actionToExecute.entryId)
+            await userObject.docs[0].ref.update({journalEntries: updatedJournalEntries})
             break;
           }
           case 'addAvailablePrompts': {
-            existingAvailablePrompts = userState.availablePrompts
-            existingAvailablePrompts = existingAvailablePrompts.concat(actionToExecute.promptsToAdd)
-            await userObject.docs[0].ref.update({availablePrompts: existingAvailablePrompts})
-            updateUserState({...userState, availablePrompts: existingAvailablePrompts})
+            updatedAvailablePrompts = updatedAvailablePrompts.concat(actionToExecute.promptsToAdd)
+            await userObject.docs[0].ref.update({availablePrompts: updatedAvailablePrompts})
             break;
           }
           case 'addMessage': {
-              existingMessages = userState.sentChats
-              existingMessages = existingMessages.concat(actionToExecute.messageId)
-              await userObject.docs[0].ref.update({sentChats: existingMessages})
-              updateUserState({...userState, sentChats: existingMessages})
+            updatedMessages.push(actionToExecute.messageId)
+            await userObject.docs[0].ref.update({sentChats: updatedMessages})
+            break;
           }
         }
-      }
+    }
+    updateUserState({...userState, journalEntries: updatedJournalEntries, availablePrompts: updatedAvailablePrompts,
+        sentChats: updatedMessages})
+    // Alert.alert("Journal Updated!")
 }
 
 async function handleOpenFeedEntryAction(actionObject, userState, updateUserState) {

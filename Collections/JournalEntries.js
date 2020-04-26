@@ -53,6 +53,20 @@ const journalEntries = [
         id: "0011",
         entry: "Uggh that didn't go so well. Those guys were serious and now I ache all over. And Jill is still missing. " +
         "Wait, looks like Zogbert's texting me."
+    },
+    {
+        id: "0012",
+        entry: "I was so mad at Zogbert I forgot to find out the miscreants who were involved in the drowning. " +
+        "I should check the bulletin more closely."
+    },
+    {
+        id: "0013",
+        entry: "Hmm the notice on the drowning says: The following students are hereby suspended for the drowning incident " +
+        "at Fishing Waters: Geoff Mathers, Prune Williams, Mikey Worthwill. - Principal, Felix High"
+    },
+    {
+        id: "0014",
+        entry: "I've snatched the school directory while no one was looking. Now I have their numbers."
     }
 ]
 export default journalEntries
