@@ -52,6 +52,6 @@ const people = [
         name: "Mary Missy",
         description: "PhD in Dairy Science",
         type: "individual"
-    }
+    },
 ]
 export default people

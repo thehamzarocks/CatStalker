@@ -43,7 +43,7 @@ const feeds = [
     },
     {
         id: "0008",
-        entry: "Taking a break out from all the partying to relax and unwind a bit",
+        entry: "Taking a break out from all the partying to relax and unwind a bit. Hope Principal Mary doesn't find out :P",
         type: "Public",
         userId: "0005"
     }
