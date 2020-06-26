@@ -50,7 +50,7 @@ const chats = [
     },
     {
         id: "0008",
-        entry: "Hey what's the big idea?",
+        entry: "Hey what's the idea?",
         prompt: "",
         fromUserId: "0002",
         toUserId: "0000"

@@ -68,7 +68,8 @@ const App: () => React$Node = () => {
 
   async function bootstrap() {
     await GoogleSignin.configure({
-      webClientId: '46548177659-09g1m8u0u3p03nia40b2ma29naa9qh5h.apps.googleusercontent.com', // required
+      // webClientId: '46548177659-09g1m8u0u3p03nia40b2ma29naa9qh5h.apps.googleusercontent.com', // required
+      webClientId: '46548177659-91jsk91cadgp2cu7bjpvbbj7tf9q3g9d.apps.googleusercontent.com'
     });
 
     const { accessToken, idToken } = await GoogleSignin.signIn();
@@ -84,12 +85,10 @@ const App: () => React$Node = () => {
   }
 
   async function initializeUserState(user) {
-    Alert.alert("Initializing")
     const querySnapshot = await firestore().collection('users').where('email','==', user.email).get()
-
     // If new user, set his initial state in the db
     if(querySnapshot.empty) {
-      await firestore().collection('users').add(data = {
+      const data = {
         email: user.email,
         name: user.displayName,
         currentStates: ['start'],
@@ -98,7 +97,8 @@ const App: () => React$Node = () => {
         sentChats: [],
         availablePrompts: [],
         currentLocation: '0001'
-      })
+      }
+      await firestore().collection('users').add(data)
     }
     await loadUserState(user)
   }
@@ -110,7 +110,7 @@ const App: () => React$Node = () => {
     if(querySnapshot.empty) {
       return
     }
-    userObject = querySnapshot.docs[0].data()
+    const userObject = querySnapshot.docs[0].data()
     setUserState({
       currentStates: userObject.currentStates,
       journalEntries: userObject.journalEntries,
